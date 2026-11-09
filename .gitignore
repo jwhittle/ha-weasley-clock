@@ -1,0 +1,6 @@
+secrets.yaml
+**/secrets.yaml
+.DS_Store
+*.pyc
+__pycache__/
+.frames/

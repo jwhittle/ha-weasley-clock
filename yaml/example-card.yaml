@@ -1,0 +1,45 @@
+# Lovelace card example — replace people/entities/zones with yours.
+type: custom:weasley-clock-card
+title: The Family
+people:
+  - entity: person.harry
+    tracker: device_tracker.life360_harry   # optional; used for battery / speed
+    name: Harry
+    color: "#9b2335"
+  - entity: person.ron
+    tracker: device_tracker.life360_ron
+    name: Ron
+    color: "#1f5f8b"
+  - entity: person.hermione
+    tracker: device_tracker.life360_hermione
+    name: Hermione
+    color: "#2e7d4f"
+  - entity: person.ginny
+    tracker: device_tracker.life360_ginny
+    name: Ginny
+    color: "#7b4b94"
+positions:
+  - name: Home
+    zones: [home]
+  - name: Work
+    zones: [work_office, work_store]   # match your zone.friendly_name / zone entity states
+  - name: School
+    zones: [School]
+  - name: Family
+    zones: [family_house]
+  - name: Out
+    zones: []
+  - name: Traveling
+    zones: []
+  - name: Lost
+    zones: []
+  - name: Mortal Peril
+    zones: []
+# Optional:
+# show_legend: true          # default true; set false on a kiosk / hub panel
+# sounds: true               # play clockwork + chime when a hand moves
+# volume: 0.6
+# sound_path: /local/weasley/
+# max_size: min(560px,78vh)  # or e.g. 96vh for a full-screen hub
+# peril_battery: 10          # battery % that maps to Mortal Peril
+# traveling_speed: 5         # tracker speed threshold (units from your tracker)

@@ -1,0 +1,41 @@
+# Compact hub / Nest Hub style: big dial, no legend, card-side sounds off
+# (optional speaker chime handled by the automation instead).
+type: custom:weasley-clock-card
+title: The Family
+show_legend: false
+max_size: 96vh
+sounds: false
+people:
+  - entity: person.harry
+    tracker: device_tracker.life360_harry
+    name: Harry
+    color: "#9b2335"
+  - entity: person.ron
+    tracker: device_tracker.life360_ron
+    name: Ron
+    color: "#1f5f8b"
+  - entity: person.hermione
+    tracker: device_tracker.life360_hermione
+    name: Hermione
+    color: "#2e7d4f"
+  - entity: person.ginny
+    tracker: device_tracker.life360_ginny
+    name: Ginny
+    color: "#7b4b94"
+positions:
+  - name: Home
+    zones: [home]
+  - name: Work
+    zones: [work_office, work_store]
+  - name: School
+    zones: [School]
+  - name: Family
+    zones: [family_house]
+  - name: Out
+    zones: []
+  - name: Traveling
+    zones: []
+  - name: Lost
+    zones: []
+  - name: Mortal Peril
+    zones: []

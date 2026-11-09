@@ -1,0 +1,62 @@
+# Optional: play a chime on a Cast / Nest Hub when someone moves,
+# then re-show the dashboard. Card-side sounds: false on that view.
+#
+# Prerequisites:
+#   1. Copy www/weasley/*.mp3 to /config/www/weasley/ (served as /local/weasley/).
+#   2. Your HA external_url (or a reachable HTTPS URL) must serve that path
+#      so the Cast device can fetch the media.
+#   3. Replace media_player.kitchen_display and person.* with your entities.
+
+automation:
+  - id: weasley_clock_hub_sound
+    alias: Weasley Clock Hub Sound
+    mode: single
+    triggers:
+      - trigger: state
+        entity_id:
+          - person.harry
+          - person.ron
+          - person.hermione
+          - person.ginny
+        not_from: [unavailable, unknown]
+        not_to: [unavailable, unknown]
+    conditions:
+      - condition: time
+        after: "07:00:00"
+        before: "22:00:00"
+    actions:
+      - action: script.weasley_hub_chime
+      - delay:
+          seconds: 20
+
+script:
+  weasley_hub_chime:
+    alias: Weasley Hub Chime
+    mode: single
+    icon: mdi:clock-time-four
+    sequence:
+      - condition: template
+        value_template: >-
+          {{ states('media_player.kitchen_display') not in ['unavailable','unknown']
+             and state_attr('media_player.kitchen_display','app_name')
+                in [none, 'Home Assistant Lovelace'] }}
+      - action: media_player.play_media
+        target:
+          entity_id: media_player.kitchen_display
+        data:
+          # Use your Home Assistant HTTPS base URL + /local/weasley/chime.mp3
+          media_content_id: "https://YOUR_HA_HOST/local/weasley/chime.mp3"
+          media_content_type: music
+      - wait_template: >-
+          {{ is_state('media_player.kitchen_display','playing')
+             and state_attr('media_player.kitchen_display','app_name')
+                == 'Default Media Receiver' }}
+        timeout: "00:00:15"
+        continue_on_timeout: true
+      - delay:
+          seconds: 5
+      - action: cast.show_lovelace_view
+        data:
+          entity_id: media_player.kitchen_display
+          dashboard_path: dashboard-kitchen   # your hub dashboard url_path
+          view_path: kitchen

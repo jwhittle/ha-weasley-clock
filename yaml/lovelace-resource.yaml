@@ -1,0 +1,7 @@
+# Settings → Dashboards → Resources → Add resource
+#   URL:  /local/weasley-clock-card.js?v=1
+#   Type: JavaScript Module
+#
+# Bump ?v= whenever you replace the file so browsers pick up the new build.
+url: /local/weasley-clock-card.js?v=1
+type: module
