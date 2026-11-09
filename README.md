@@ -4,7 +4,7 @@ A Harry Potter–style family location clock as a vanilla Lovelace custom card.
 Each person's hand points to **Home**, **Work**, **School**, **Family**, **Out**,
 **Traveling**, **Lost**, or **Mortal Peril** (battery under 10% by default).
 Uses your existing `person.*` entities and optional `device_tracker.*` (battery /
-speed). No HACS dependency — drop one JS file into `/config/www`.
+speed), built with Life360 in mind; see [Location data](#location-data-life360). No HACS dependency — drop one JS file into `/config/www`.
 
 ![Example clock](screenshots/example-clock.png)
 
@@ -67,6 +67,42 @@ speed). No HACS dependency — drop one JS file into `/config/www`.
 3. Several zones can share one position (e.g. two workplaces both → Work).
 4. Empty `zones` lists are fine for derived positions (Out / Traveling / Lost /
    Mortal Peril), which the card computes from state / battery / speed.
+
+## Location data (Life360)
+The clock gets locations from Home Assistant; it never talks to Life360 or any
+other service itself. Everything stays inside your HA instance.
+
+**Getting Life360 into HA.** Install a Life360 integration (the community
+[ha-life360](https://github.com/pnbruckner/ha-life360) integration via HACS,
+since the built-in one was removed from HA core). It creates a
+`device_tracker.life360_<name>` entity for each Circle member. Then go to
+**Settings → People**, open each person, and add their Life360 tracker so the
+`person.*` entity follows it. Any other tracker (HA Companion app, GPS, router)
+works too; Life360 just adds the extra attributes below.
+
+**What the card reads:**
+| Source | Field | Used for |
+|---|---|---|
+| `person.*` | state (`home`, a zone name, or `not_home`) | Matching a position via `positions[].zones` |
+| tracker (`tracker:`) | `battery_level` / `battery` | **Mortal Peril** when below `peril_battery` |
+| tracker | `battery_charging` / `charging` | Skips Mortal Peril while charging |
+| tracker | `driving`, `speed` | **Traveling** when driving or speed > `traveling_speed` |
+
+Life360 places only show up if you also create matching HA zones; the card
+matches on the zone state HA reports, not Life360 place names.
+
+**How a hand picks its position** (first match wins):
+1. **Mortal Peril**: tracker battery under `peril_battery` and not charging.
+2. **Zone match**: the person's state matches a zone in a position's `zones` list
+   (e.g. `home` → Home, `work_office` → Work).
+3. **Traveling**: not in a mapped zone and Life360 reports `driving: true`
+   or `speed` above `traveling_speed`.
+4. **Out**: in some other named zone not mapped to a position.
+5. **Lost**: anything else (`not_home`, `unknown`, `unavailable`).
+
+The `tracker:` line is optional. Without it, the clock still works from the
+`person.*` state, but Mortal Peril and Traveling need a tracker that reports
+battery and speed/driving.
 
 ## Optional hub chime
 The card can play sounds in the browser (`sounds: true`). On a Cast / Nest Hub
